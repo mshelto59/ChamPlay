@@ -59,39 +59,10 @@ namespace OpenVPNManager
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-
-                if (CommandLineArgumentsContain(arguments, "INSTALL-AUTOSTART"))
-                {
-                    Helper.InstallAutostart();
-                    return;
-                }
-                else if (CommandLineArgumentsContain(arguments, "REMOVE-AUTOSTART"))
-                {
-                    Helper.RemoveAutostart(); // Remove autostart, quit (for setup, e.g.)
-                    return;
-                }
-                else if (CommandLineArgumentsContain(arguments, "?") || CommandLineArgumentsContain(arguments, "HELP") || CommandLineArgumentsContain(arguments, "H"))
-                {
-                    RTLMessageBox.Show(res.GetString("ARGS_Help"), // Show help
-                    MessageBoxIcon.Information);
-                    return;
-                }
+                
                 Mutex appSingleton = new Mutex(false, Application.ProductName + ".SingleInstance");
-                if (appSingleton.WaitOne(0, false))
-                {
-                    m_mainform = new FrmGlobalStatus(arguments.ToArray());
-                    Application.Run(m_mainform);
-                }
-                else
-                {
-                    if (arguments.Count > 0)
-                    {
-                        SimpleComm sc = new SimpleComm(4911);
-                        if (!sc.client(arguments.ToArray()))
-                            RTLMessageBox.Show(res.GetString("ARGS_Error"),
-                                MessageBoxIcon.Error);
-                    }
-                }
+                m_mainform = new FrmGlobalStatus();
+                Application.Run(m_mainform);
 
                 appSingleton.Close();
             }
@@ -113,8 +84,6 @@ namespace OpenVPNManager
             if (e.Mode == Microsoft.Win32.PowerModes.Suspend)
                 m_mainform.CloseAll();
 
-            else if (e.Mode == Microsoft.Win32.PowerModes.Resume)
-                m_mainform.ResumeAll();
-        }
+           }
     }
 }

@@ -79,7 +79,7 @@ namespace OpenVPNManager
         /// <param name="e">ignored</param>
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            openUrl("http://openvpn.jowisoftware.de/");
+            openUrl("http://luxistech.com/");
         }
 
         /// <summary>
@@ -140,6 +140,11 @@ namespace OpenVPNManager
                 RTLMessageBox.Show(this,
                     Program.res.GetString("BOX_UpdateNone"),
                     MessageBoxIcon.Information);
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

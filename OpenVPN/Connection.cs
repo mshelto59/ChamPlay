@@ -17,10 +17,6 @@ namespace OpenVPNUtils
         /// </summary>
         private ManagementLogic m_ovpnMLogic;
 
-        /// <summary>
-        /// The log manager.
-        /// </summary>
-        private LogManager m_logs;
 
         /// <summary>
         /// Dont raise events anymore, used on dispose().
@@ -66,20 +62,14 @@ namespace OpenVPNUtils
         /// <param name="earlyLogLevel">Log level</param>
         /// <param name="receiveOldLogs">Should old log lines be received?</param>
         /// <seealso cref="Logs"/>
-        protected void Init(string host, int port,
-            EventHandler<LogEventArgs> earlyLogEvent,
-                int earlyLogLevel, bool receiveOldLogs)
+        protected void Init(string host, int port, int earlyLogLevel, bool receiveOldLogs)
         {
             this.Host = host;
             this.Port = port;
             m_state = new State(this);
 
-            m_logs = new LogManager(this);
-            m_logs.DebugLevel = earlyLogLevel;
-            if (earlyLogEvent != null)
-                m_logs.LogEvent += earlyLogEvent;
-
-            m_ovpnMLogic = new ManagementLogic(this, host, port, m_logs, receiveOldLogs);
+                        
+            m_ovpnMLogic = new ManagementLogic(this, host, port, receiveOldLogs);
             m_state.ChangeState(VPNConnectionState.Stopped);
         }
         #endregion
@@ -102,14 +92,6 @@ namespace OpenVPNUtils
         {
             get;
             private set;
-        }
-
-        /// <summary>
-        /// Get the LogManager.
-        /// </summary>
-        public LogManager Logs
-        {
-            get { return m_logs; }
         }
 
         /// <summary>
@@ -217,15 +199,14 @@ namespace OpenVPNUtils
                 }
                 catch (System.Net.Sockets.SocketException ex)
                 {
-                    m_logs.logDebugLine(1, "Could not establish connection " +
-                        "to management interface:" + ex.Message);
+
 
                     if(m_state.ConnectionState != VPNConnectionState.Initializing)
                         return false;
 
                     if (i != 8)
                     {
-                        m_logs.logDebugLine(1, "Trying again in a second");
+                       
                         System.Threading.Thread.Sleep(500);
                     }
                 }
@@ -234,7 +215,7 @@ namespace OpenVPNUtils
             if (m_state.ConnectionState != VPNConnectionState.Initializing)
                 return false;
 
-            m_logs.logDebugLine(1, "Could not establish connection, abording");
+           
             m_state.ConnectionState = VPNConnectionState.Running;
             Disconnect();
 
@@ -275,7 +256,7 @@ namespace OpenVPNUtils
             if (NoEvents) 
                 return NeedCardIdEventArgs.None;
 
-            m_logs.logDebugLine(1, "Asking user for PKCS11 Token");
+           
             NeedCardIdEventArgs args = 
                 new NeedCardIdEventArgs(pkcs11d.ToArray());
 
@@ -295,7 +276,7 @@ namespace OpenVPNUtils
         {
             if (NoEvents) return null;
 
-            m_logs.logDebugLine(1, "Asking user for password \"" + pwType + "\"");
+            
             NeedPasswordEventArgs args =
                 new NeedPasswordEventArgs(pwType);
 
@@ -317,7 +298,6 @@ namespace OpenVPNUtils
         {
             if (NoEvents) return null;
 
-            m_logs.logDebugLine(1, "Asking user for username and password \"" + pwType + "\"");
             NeedLoginAndPasswordEventArgs args =
                 new NeedLoginAndPasswordEventArgs(pwType);
 
@@ -378,7 +358,7 @@ namespace OpenVPNUtils
                 {
                     m_ovpnMLogic.Dispose();
                 }
-                m_logs = null;
+               
                 m_ovpnMLogic = null;
                 disposed = true;
             }

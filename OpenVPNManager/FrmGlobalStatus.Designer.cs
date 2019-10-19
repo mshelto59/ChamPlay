@@ -1,4 +1,6 @@
-﻿namespace OpenVPNManager
+﻿using System;
+
+namespace OpenVPNManager
 {
     partial class FrmGlobalStatus
     {
@@ -30,7 +32,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmGlobalStatus));
-            this.pnlStatus = new System.Windows.Forms.FlowLayoutPanel();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -40,19 +41,12 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.niIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.btnSettings = new System.Windows.Forms.Button();
             this.btnAbout = new System.Windows.Forms.Button();
-            this.btnQuit = new System.Windows.Forms.Button();
-            this.btnClose = new System.Windows.Forms.Button();
+            this.btnConnect = new System.Windows.Forms.Button();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // pnlStatus
-            // 
-            resources.ApplyResources(this.pnlStatus, "pnlStatus");
-            this.pnlStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlStatus.Name = "pnlStatus";
-            this.pnlStatus.Resize += new System.EventHandler(this.pnlStatus_Resize);
             // 
             // contextMenu
             // 
@@ -102,22 +96,6 @@
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
-            // niIcon
-            // 
-            this.niIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-            this.niIcon.ContextMenuStrip = this.contextMenu;
-            resources.ApplyResources(this.niIcon, "niIcon");
-            this.niIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.niIcon_MouseDoubleClick);
-            // 
-            // btnSettings
-            // 
-            resources.ApplyResources(this.btnSettings, "btnSettings");
-            this.btnSettings.Image = global::OpenVPNManager.Properties.Resources.BUTTON_Settings;
-            this.btnSettings.Name = "btnSettings";
-            this.toolTip.SetToolTip(this.btnSettings, resources.GetString("btnSettings.ToolTip"));
-            this.btnSettings.UseVisualStyleBackColor = true;
-            this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
-            // 
             // btnAbout
             // 
             resources.ApplyResources(this.btnAbout, "btnAbout");
@@ -127,64 +105,61 @@
             this.btnAbout.UseVisualStyleBackColor = true;
             this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
-            // btnQuit
+            // btnConnect
             // 
-            resources.ApplyResources(this.btnQuit, "btnQuit");
-            this.btnQuit.Name = "btnQuit";
-            this.toolTip.SetToolTip(this.btnQuit, resources.GetString("btnQuit.ToolTip"));
-            this.btnQuit.UseVisualStyleBackColor = true;
-            this.btnQuit.Click += new System.EventHandler(this.btnQuit_Click);
+            resources.ApplyResources(this.btnConnect, "btnConnect");
+            this.btnConnect.Name = "btnConnect";
+            this.btnConnect.UseVisualStyleBackColor = true;
+            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
-            // btnClose
+            // lblTitle
             // 
-            resources.ApplyResources(this.btnClose, "btnClose");
-            this.btnClose.Image = global::OpenVPNManager.Properties.Resources.BUTTON_Close;
-            this.btnClose.Name = "btnClose";
-            this.toolTip.SetToolTip(this.btnClose, resources.GetString("btnClose.ToolTip"));
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            resources.ApplyResources(this.lblTitle, "lblTitle");
+            this.lblTitle.Name = "lblTitle";
+            // 
+            // lblStatus
+            // 
+            resources.ApplyResources(this.lblStatus, "lblStatus");
+            this.lblStatus.Name = "lblStatus";
             // 
             // FrmGlobalStatus
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.pnlStatus);
-            this.Controls.Add(this.btnClose);
-            this.Controls.Add(this.btnQuit);
-            this.Controls.Add(this.btnSettings);
+            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.lblTitle);
+            this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.btnAbout);
             this.KeyPreview = true;
             this.Name = "FrmGlobalStatus";
             this.Opacity = 0D;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmGlobalStatus_FormClosing);
             this.Shown += new System.EventHandler(this.FrmGlobalStatus_Shown);
-            this.ResizeEnd += new System.EventHandler(this.FrmGlobalStatus_ResizeEnd);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmGlobalStatus_KeyDown);
-            this.Resize += new System.EventHandler(this.FrmGlobalStatus_Resize);
             this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
-        #endregion
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
-        private System.Windows.Forms.FlowLayoutPanel pnlStatus;
-        private System.Windows.Forms.Button btnClose;
+
+        #endregion
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
         private System.Windows.Forms.NotifyIcon niIcon;
-        private System.Drawing.Icon trayDisconnectedIcon;
-        private System.Drawing.Icon trayConnectedIcon;
-        private System.Drawing.Icon trayConnectingIcon;
-        private System.Drawing.Icon trayMultipleIcon;
         private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.Button btnAbout;
-        private System.Windows.Forms.Button btnQuit;
-        private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Label lblTitle;
+        public System.Windows.Forms.Label lblStatus;
+        public System.Windows.Forms.Button btnConnect;
     }
 }

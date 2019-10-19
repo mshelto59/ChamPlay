@@ -39,10 +39,6 @@ namespace OpenVPNUtils
         /// </summary>
         private Thread m_reader;
 
-        /// <summary>
-        /// Log manager.
-        /// </summary>
-        private LogManager m_logs;
 
         /// <summary>
         /// Saves whether the Object is connected to a OpenVPN Instance.
@@ -69,13 +65,11 @@ namespace OpenVPNUtils
         /// </summary>
         /// <param name="host">Host to connect to (127.0.0.1)</param>
         /// <param name="port">Port to connect to</param>
-        /// <param name="logs">Log manager</param>
-        public Communicator(string host, int port,
-            LogManager logs)
+        
+        public Communicator(string host, int port)
         {
             m_host = host;
             m_port = port;
-            m_logs = logs;
             m_tcpC = new TcpClient();
         }
         #endregion
@@ -85,16 +79,14 @@ namespace OpenVPNUtils
         /// </summary>
         public void connect()
         {
-            m_logs.logLine(LogType.Management, "Connecting to management interface");
-            m_logs.logDebugLine(1, "Connecting to management interface");
-
+            
             try
             {
                 m_tcpC.Connect(m_host, m_port);
             }
             catch (SocketException e)
             {
-                m_logs.logDebugLine(1, "Connection failed: " + e.Message);
+                
                 throw; // new ApplicationException("Could not connect to socket: " + e.Message);
             }
             
@@ -114,7 +106,6 @@ namespace OpenVPNUtils
                 throw new IOException("Got null");
 
             // log line, fire event
-            m_logs.logDebugLine(5, "Got: \"" + line + "\"");
             gotLine(this, new GotLineEventArgs(line));
         }
 
@@ -135,16 +126,16 @@ namespace OpenVPNUtils
             // thread was aborted (this happens on disconnection)
             catch (ThreadAbortException)
             {
-                m_logs.logDebugLine(2, "readerThread died: ThreadAbortException");
+               
             }
 
             // ioexception (this can happen on disconnection, too)
             catch (IOException e)
             {
-                m_logs.logDebugLine(2, "readerThread died: IOException: " + e.Message);
+                
             }
 
-            m_logs.logDebugLine(1, "Connection closed by server");
+           
             m_connected = false;
             
             if(connectionClosed != null)
@@ -163,7 +154,7 @@ namespace OpenVPNUtils
             {
                 lock (m_swrite)
                 {
-                    m_logs.logDebugLine(5, "Sending \"" + s + "\"");
+                   
 
                     try
                     {
@@ -173,13 +164,13 @@ namespace OpenVPNUtils
                     }
                     catch (IOException)
                     {
-                        m_logs.logDebugLine(3, "Could not send: IOException. Connection closed?");
+                      
                     }
                 }
             }
 
-            else
-                m_logs.logDebugLine(3, "Trying to send, but disconnected or null: \"" + s + "\"");
+
+              
 
             return ret;
         }
@@ -198,8 +189,7 @@ namespace OpenVPNUtils
         /// </summary>
         public void disconnect()
         {
-            m_logs.logLine(LogType.Management, "Disconnecting from management interface");
-            m_logs.logDebugLine(1, "Disconnecting from management interface");
+            
 
             if (m_reader != null && !Thread.CurrentThread.Equals(m_reader))
                 m_reader.Abort();
@@ -209,9 +199,9 @@ namespace OpenVPNUtils
 
             if(m_swrite != null)
                 m_swrite.Close();
-
-            m_tcpC.Close();
             m_tcpC = new TcpClient();
+            m_tcpC.Close();
+           
         }
 
         #region IDisposable Members

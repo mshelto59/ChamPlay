@@ -33,7 +33,6 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.lblName = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.label1 = new System.Windows.Forms.Label();
@@ -59,17 +58,10 @@
             // panel1
             // 
             resources.ApplyResources(this.panel1, "panel1");
-            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.linkLabel2);
             this.panel1.Controls.Add(this.linkLabel1);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Name = "panel1";
-            // 
-            // label2
-            // 
-            resources.ApplyResources(this.label2, "label2");
-            this.label2.MaximumSize = new System.Drawing.Size(200, 0);
-            this.label2.Name = "label2";
             // 
             // linkLabel2
             // 
@@ -88,8 +80,8 @@
             // label1
             // 
             resources.ApplyResources(this.label1, "label1");
-            this.label1.MaximumSize = new System.Drawing.Size(200, 0);
             this.label1.Name = "label1";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // btnUpdateCheck
             // 
@@ -129,7 +121,6 @@
         private System.Windows.Forms.LinkLabel linkLabel2;
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnUpdateCheck;
         private System.Windows.Forms.ToolTip toolTip;
     }

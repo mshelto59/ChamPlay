@@ -45,7 +45,7 @@ namespace OpenVPNUtils
         /// <param name="smartCardSupport">Enable SmartCard support</param>
         /// <seealso cref="Connection.Logs"/>
         public UserSpaceConnection(string bin, string config,
-            EventHandler<LogEventArgs> earlyLogEvent, int earlyLogLevel, bool smartCardSupport)
+           int earlyLogLevel, bool smartCardSupport)
         {
             if (bin == null || bin.Length == 0)
                 throw new ArgumentNullException(bin, "OpenVPN Binary is not valid/selected");
@@ -73,9 +73,9 @@ namespace OpenVPNUtils
                 m_deleteLogFile = false;
             }
 
-            this.Init("127.0.0.1", 11195 + obj_count++, earlyLogEvent, earlyLogLevel, true);
+            this.Init("127.0.0.1", 11195 + obj_count++, earlyLogLevel, true);
             m_ovpnService = new UserSpaceService(bin, config,
-                Path.GetDirectoryName(config), Logs, base.Host, base.Port,
+                Path.GetDirectoryName(config), base.Host, base.Port,
                 forwardLogFile, smartCardSupport);
 
             m_ovpnService.serviceExited += new EventHandler(m_ovpnService_serviceExited);
@@ -166,23 +166,22 @@ namespace OpenVPNUtils
             if (abort && ss.ConnectionState == VPNConnectionState.Stopping)
             {
                 m_abort = false;
-                Logs.logDebugLine(2, "Connection is marked as aborded");
+                
                 switch (connectionState)
                 {
                     case 1: // service not startet
-                        Logs.logDebugLine(2, "No action required");
+                       
                         break;
                     case 2: // service startet, not connected via tcp
-                        Logs.logDebugLine(2, "Killing serivce");
+                       
                         m_ovpnService.kill();
                         break;
                     case 3: // service startet and connected via tcp
-                        Logs.logDebugLine(2, "Calling disconnect");
+                       
                         Disconnect();
                         break;
                     default:
-                        Logs.logDebugLine(1, "Connection state is invalid (" +
-                            connectionState + "). Ignoring disconnect event.");
+                        
                         break;
                 }
                 State.ChangeState(VPNConnectionState.Stopped);

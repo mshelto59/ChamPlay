@@ -18,56 +18,14 @@ namespace OpenVPNManager
     {
         #region variables
 
-        /// <summary>
-        /// the menu item which holds all other menu items to interact with the vpn
-        /// </summary>
-        private ToolStripMenuItem m_menu;
-
-        /// <summary>
-        /// shows the status
-        /// </summary>
-        private ToolStripMenuItem m_menu_show;
-
-        /// <summary>
-        /// connects to vpn
-        /// </summary>
-        private ToolStripMenuItem m_menu_connect;
-
-        /// <summary>
-        /// disconnects from vpn
-        /// </summary>
-        private ToolStripMenuItem m_menu_disconnect;
-
-        /// <summary>
-        /// shows information about the error
-        /// </summary>
-        private ToolStripMenuItem m_menu_error;
-
-        /// <summary>
-        /// edits the configuration
-        /// </summary>
-        private ToolStripMenuItem m_menu_edit;
-
-        /// <summary>
-        /// holds the infobox control for this vpn
-        /// </summary>
-        private VPNInfoBox m_infobox;
-
-        /// <summary>
-        /// holds the status form for this vpn
-        /// </summary>
-        private FrmStatus m_status;
+       
+         
 
         /// <summary>
         /// holds a parent for the menu items<br />
         /// this is needed for invokes
         /// </summary>
         private FrmGlobalStatus m_parent;
-
-        /// <summary>
-        /// the vpn itself
-        /// </summary>
-        private Connection m_vpn;
 
         /// <summary>
         /// the error message of the new OVPN() call<br />
@@ -103,8 +61,6 @@ namespace OpenVPNManager
         private FrmPasswd m_frmpw;
 
         private FrmLoginAndPasswd m_frmlpw;
-
-        private FrmSelectPKCS11Key m_frmkey;
 
         #endregion
 
@@ -186,11 +142,10 @@ namespace OpenVPNManager
 
         #region constructor
         [SuppressMessage("Microsoft.Mobility", "CA1601:DoNotUseTimersThatPreventPowerStateChanges")]
-        private VPNConfig()
+        public VPNConfig()
         {
-            m_menu = new ToolStripMenuItem();
-            m_infobox = new VPNInfoBox(this);
-            m_status = new FrmStatus(this);
+  
+            
 
             m_disconnectTimer = new System.Timers.Timer(100);
             m_disconnectTimer.Elapsed += new System.Timers.ElapsedEventHandler(m_disconnectTimer_Elapsed);
@@ -202,10 +157,7 @@ namespace OpenVPNManager
         /// provides the connection
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "VPN")]
-        public Connection VPNConnection
-        {
-            get { return m_vpn; }
-        }
+        public Connection VPNConnection { get; private set; }
 
         /// <summary>
         /// the name of this configuration
@@ -217,21 +169,7 @@ namespace OpenVPNManager
             private set;
         }
 
-        /// <summary>
-        /// return the menu which holds all the submenu entries
-        /// </summary>
-        public ToolStripMenuItem Menuitem
-        {
-            get { return m_menu; }
-        }
 
-        /// <summary>
-        /// reutrn the infobox
-        /// </summary>
-        public VPNInfoBox InfoBox
-        {
-            get { return m_infobox; }
-        }
 
         /// <summary>
         /// indicates whether this configuration uses a windows service
@@ -248,36 +186,14 @@ namespace OpenVPNManager
         /// </summary>
         private void init()
         {
-            if (m_parent.InvokeRequired)
-            {
-                try
-                {
-                    m_parent.Invoke(new UtilsHelper.Action(init));
-                }
-                catch (ObjectDisposedException)
-                {
-                }
-                return;
-            }
 
-            m_vpn = null;
-            m_menu.DropDownItems.Clear();
-            m_status.Hide();
+            VPNConnection = null;
 
             try
             {
-                if (!m_isService)
-                {
-                    m_vpn = new UserSpaceConnection(m_bin, m_file,
-                        new EventHandler<LogEventArgs>(addLog),
-                        m_dbglevel, m_smartCard);
-                }
-                else
-                {
-                    m_vpn = new ServiceConnection(m_file,
-                        new EventHandler<LogEventArgs>(addLog),
-                        m_dbglevel, m_smartCard);
-                }
+                
+                    VPNConnection = new UserSpaceConnection(m_bin, m_file, m_dbglevel, m_smartCard);
+               
             }
             catch (ApplicationException e)
             {
@@ -288,49 +204,22 @@ namespace OpenVPNManager
             if (m_isService)
                 Name += " (" + Program.res.GetString("DIALOG_Service") + ")";
 
-            m_menu.Text = Name;
-            m_infobox.Init();
 
             if (m_error_message != null)
             {
-                m_menu_error = new ToolStripMenuItem(Program.res.GetString("TRAY_Error_Information"));
-                m_menu_error.Click += new EventHandler(m_menu_error_Click);
-                m_menu.DropDownItems.Add(m_menu_error);
-
+                m_parent.lblStatus.Text = m_error_message;
                 return;
             }
 
-            m_vpn.Logs.DebugLevel = m_dbglevel;
-            m_vpn.State.StateChanged += new EventHandler<StateChangedEventArgs>(State_StateChanged);
-            m_vpn.NeedCardId += new EventHandler<NeedCardIdEventArgs>(m_vpn_needCardID);
-            m_vpn.NeedPassword += new EventHandler<NeedPasswordEventArgs>(m_vpn_needPassword);
-            m_vpn.NeedLoginAndPassword += new EventHandler<NeedLoginAndPasswordEventArgs>(m_vpn_needLoginAndPassword);
 
-            m_status.Init();
+            
+            VPNConnection.State.StateChanged += new EventHandler<StateChangedEventArgs>(State_StateChanged);
+            VPNConnection.NeedPassword += new EventHandler<NeedPasswordEventArgs>(m_vpn_needPassword);
+            VPNConnection.NeedLoginAndPassword += new EventHandler<NeedLoginAndPasswordEventArgs>(m_vpn_needLoginAndPassword);
 
-            m_menu_connect = new ToolStripMenuItem(Program.res.GetString("TRAY_Connect"));
-            m_menu_connect.Image = Properties.Resources.BUTTON_Connect;
-            m_menu_connect.Click += new EventHandler(m_menu_connect_Click);
-            m_menu.DropDownItems.Add(m_menu_connect);
+            
 
-            m_menu_disconnect = new ToolStripMenuItem(Program.res.GetString("TRAY_Disconnect"));
-            m_menu_disconnect.Image = Properties.Resources.BUTTON_Disconnect;
-            m_menu_disconnect.Click += new EventHandler(m_menu_disconnect_Click);
-            m_menu_disconnect.Visible = false;
-            m_menu.DropDownItems.Add(m_menu_disconnect);
-
-            m_menu_show = new ToolStripMenuItem(Program.res.GetString("TRAY_Show"));
-            m_menu_show.Image = Properties.Resources.BUTTON_Details;
-            m_menu_show.Click += new EventHandler(m_menu_show_Click);
-            m_menu.DropDownItems.Add(m_menu_show);
-
-            m_menu_edit = new ToolStripMenuItem(Program.res.GetString("TRAY_Edit"));
-            m_menu_edit.Enabled = !m_isService;
-            m_menu_edit.Image = Properties.Resources.BUTTON_Edit;
-            m_menu_edit.Click += new EventHandler(m_menu_edit_Click);
-            m_menu.DropDownItems.Add(m_menu_edit);
-
-            m_menu.Image = Properties.Resources.STATE_Stopped;
+           
         }
 
         /// <summary>
@@ -360,88 +249,29 @@ namespace OpenVPNManager
             switch (e.NewState.ConnectionState)
             {
                 case VPNConnectionState.Initializing:
-                    m_menu_disconnect.Visible = true;
-                    m_menu_connect.Visible = false;
-                    m_menu.Image = Properties.Resources.STATE_Initializing;
+                    m_parent.lblStatus.Text = "Status: Initializing Connection";
                     break;
                 case VPNConnectionState.Running:
-
-                    m_menu_disconnect.Visible = true;
-                    m_menu_connect.Visible = false;
-                    m_menu.Image = Properties.Resources.STATE_Running;
-
-                    // show assigned ip if possible
-                    string text = Program.res.GetString("STATE_Connected");
-                    if (m_vpn.IP != null)
-                        text += Environment.NewLine +
-                            "IP: " + m_vpn.IP;
-
-                    m_parent.ShowPopup(Name, text);
+                    m_parent.lblStatus.Text = "Status: Connected\nPlease open the Steam Client";
+                    m_parent.btnConnect.Text = "Logout";
                     break;
                 case VPNConnectionState.Stopped:
-                    m_menu_disconnect.Visible = false;
-                    m_menu_connect.Visible = true;
-                    m_menu.Image = Properties.Resources.STATE_Stopped;
+                    m_parent.lblStatus.Text = "Status: Disconnected\nPlease Log In";
+                    m_parent.btnConnect.Text = "Login";
                     break;
                 case VPNConnectionState.Stopping:
-                    m_menu_disconnect.Visible = false;
-                    m_menu_connect.Visible = false;
-                    m_menu.Image = Properties.Resources.STATE_Stopping;
+                    m_parent.lblStatus.Text = "Status: Disconnecting";
                     break;
                 case VPNConnectionState.Error:
-                default:
-                    m_menu_disconnect.Visible = false;
-                    m_menu_connect.Visible = true;
-                    m_menu.Image = Properties.Resources.STATE_Error;
-
-                    if (m_vpn.LogFile != null)
-                    {
-                        if (RTLMessageBox.Show(m_status,
-                            Program.res.GetString("BOX_VPN_Error"),
-                            MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2,
-                            MessageBoxIcon.Error) == DialogResult.Yes)
-                        {
-                            ProcessStartInfo pi = new ProcessStartInfo();
-                            pi.Arguments = "\"" + m_vpn.LogFile + "\"";
-                            pi.ErrorDialog = true;
-                            pi.FileName = "notepad.exe";
-                            pi.UseShellExecute = true;
-
-
-                            Process.Start(pi);
-                        }
-                    }
-                    else
-                    {
-                        RTLMessageBox.Show(m_status,
-                            Program.res.GetString("BOX_VPNS_Error"),
-                            MessageBoxButtons.OK, MessageBoxDefaultButton.Button2,
-                            MessageBoxIcon.Error);
-                    }
+                    m_parent.lblStatus.Text = "Status: ERROR";
                     break;
+                default:
+                    m_parent.lblStatus.Text = "Status: Disconnected\nPlease Log In";
+                    m_parent.btnConnect.Text = "Login";
+                   break;
             }
-
-            m_parent.SetTrayIconAndPopupText();
         }
 
-        /// <summary>
-        /// adds a log message to the log window
-        /// </summary>
-        /// <param name="sender">ignored</param>
-        /// <param name="e">contains the message</param>
-        private void addLog(Object sender, LogEventArgs e)
-        {
-            if(m_status != null)
-                m_status.AddLog(e.MessageType, e.Message);
-        }
-
-        /// <summary>
-        /// shows the status window
-        /// </summary>
-        public void ShowStatus()
-        {
-            m_status.Show();
-        }
 
         /// <summary>
         /// Show error detail in a message box
@@ -462,8 +292,7 @@ namespace OpenVPNManager
         {
             try
             {
-                m_status.ShowTemporary();
-                m_vpn.Connect();
+               VPNConnection.Connect();
             }
             catch (InvalidOperationException e)
             {
@@ -498,10 +327,10 @@ namespace OpenVPNManager
         public void Disconnect(bool closeForm)
         {
             // disconnect if needed
-            if (m_vpn != null)
+            if (VPNConnection != null)
                 try
                 {
-                    m_vpn.Disconnect();
+                    VPNConnection.Disconnect();
                 }
                 catch (InvalidOperationException)
                 {
@@ -510,15 +339,9 @@ namespace OpenVPNManager
             if (m_frmpw != null)
                 m_frmpw.Invoke(new UtilsHelper.Action<Form>(closeSubForm), m_frmpw);
 
-            if (m_frmkey != null)
-                m_frmkey.Invoke(new UtilsHelper.Action<Form>(closeSubForm), m_frmkey);
-
             if (m_frmlpw != null)
                 m_frmlpw.Invoke(new UtilsHelper.Action<Form>(closeSubForm), m_frmlpw);
 
-            // close the window if needed
-            if (closeForm && m_status != null)
-                m_status.Close();
         }
 
         private void closeSubForm(Form f) { f.Close(); }
@@ -566,8 +389,8 @@ namespace OpenVPNManager
         {
             // was a connection established?
             bool wasConnected = false;
-            VPNConnectionState state = m_vpn.State.CreateSnapshot().ConnectionState;
-            if (m_vpn != null)
+            VPNConnectionState state = VPNConnection.State.CreateSnapshot().ConnectionState;
+            if (VPNConnection != null)
                 wasConnected = state == VPNConnectionState.Initializing ||
                     state == VPNConnectionState.Running;
 
@@ -634,56 +457,7 @@ namespace OpenVPNManager
             m_frmlpw = null;
         }
 
-        /// <summary>
-        /// OVPN requests a SmardCard id <br />
-        /// generates and shows a form, answers via e
-        /// </summary>
-        /// <param name="sender">OVPN which requests the id</param>
-        /// <param name="e">Information, what was found</param>
-        private void m_vpn_needCardID(object sender, NeedCardIdEventArgs e)
-        {
-            // if there is no id
-            if (e.CardDetails.Count == 0)
-            {
-                if (RTLMessageBox.Show(m_parent,
-                    Program.res.GetString("BOX_NoKey"),
-                    MessageBoxButtons.RetryCancel,
-                    MessageBoxDefaultButton.Button1,
-                    MessageBoxIcon.Warning) == DialogResult.Retry)
-
-                    e.SelectedId = NeedCardIdEventArgs.Retry;
-                else
-                {
-                    e.SelectedId = NeedCardIdEventArgs.None;
-                    m_disconnectTimer.Start();
-
-                }
-            }
-
-            // if there is only one id, use it
-            else if (e.CardDetails.Count == 1)
-                e.SelectedId = e.CardDetails[0].Number;
-            else
-            {
-                // request key
-                m_frmkey = new FrmSelectPKCS11Key();
-                int res = m_frmkey.SelectKey(e.CardDetails, this.Name);
-                if (res == -1)
-                {
-                    e.SelectedId = NeedCardIdEventArgs.None;
-                    if (VPNConnection.State.CreateSnapshot().ConnectionState
-                        == VPNConnectionState.Initializing)
-                    {
-                        m_disconnectTimer.Start();
-                    }
-                }
-                else if (res == -2)
-                    e.SelectedId = NeedCardIdEventArgs.Retry;
-                else
-                    e.SelectedId = res;
-                m_frmkey = null;
-            }
-        }
+        
 
         /// <summary>
         /// "Error Information" was selected.
@@ -712,7 +486,7 @@ namespace OpenVPNManager
         /// <param name="e">ignored</param>
         private void m_menu_disconnect_Click(object sender, EventArgs e)
         {
-            VPNConnectionState state = m_vpn.State.CreateSnapshot().ConnectionState;
+            VPNConnectionState state = VPNConnection.State.CreateSnapshot().ConnectionState;
             if (state == VPNConnectionState.Initializing ||
                 state == VPNConnectionState.Running)
 
@@ -727,21 +501,10 @@ namespace OpenVPNManager
         private void m_menu_connect_Click(object sender, EventArgs e)
         {
             // connect only, if we are disconnected
-            StateSnapshot ss = m_vpn.State.CreateSnapshot();
+            StateSnapshot ss = VPNConnection.State.CreateSnapshot();
             if (ss.ConnectionState == VPNConnectionState.Stopped ||
                 ss.ConnectionState == VPNConnectionState.Error)
                 Connect();
-        }
-
-        /// <summary>
-        /// show was selected in the context menu
-        /// </summary>
-        /// <param name="sender">ignore</param>
-        /// <param name="e">ignore</param>
-        private void m_menu_show_Click(object sender, EventArgs e)
-        {
-            // show status window
-            ShowStatus();
         }
 
         /// <summary>
@@ -751,9 +514,9 @@ namespace OpenVPNManager
         {
             get
             {
-                if (m_vpn != null)
+                if (VPNConnection != null)
                 {
-                    var state = m_vpn.State.CreateSnapshot();
+                    var state = VPNConnection.State.CreateSnapshot();
                     if (state.ConnectionState == VPNConnectionState.Stopped
                         || state.ConnectionState == VPNConnectionState.Error)
                         return false;
@@ -785,34 +548,17 @@ namespace OpenVPNManager
                 if (disposing)
                 {
                     m_disconnectTimer.Dispose();
-                    m_frmkey.Dispose();
                     m_frmlpw.Dispose();
                     m_frmpw.Dispose();
-                    m_infobox.Dispose();
-                    m_menu.Dispose();
-                    m_menu_connect.Dispose();
-                    m_menu_disconnect.Dispose();
-                    m_menu_edit.Dispose();
-                    m_menu_error.Dispose();
-                    m_menu_show.Dispose();
                     m_parent.Dispose();
-                    m_status.Dispose();
-                    m_vpn.Dispose();
+                    VPNConnection.Dispose();
                 }
 
-                m_vpn = null;
-                m_status = null;
+                VPNConnection = null;
                 m_parent = null;
-                m_menu_show = null;
-                m_menu_error = null;
-                m_menu_edit = null;
-                m_menu_disconnect = null;
-                m_menu_connect = null;
-                m_menu = null;
-                m_infobox = null;
+                
                 m_frmpw = null;
                 m_frmlpw = null;
-                m_frmkey = null;
                 m_disconnectTimer = null;
 
                 disposed = true;

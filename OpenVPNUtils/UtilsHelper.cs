@@ -43,14 +43,6 @@ namespace OpenVPNUtils
         public delegate T0 Function<T0, T1>(T1 a);
         public delegate T0 Function<T0, T1, T2>(T1 a, T2 b);
 
-        public static ServiceConfigProperty[] managementConfigItems = new ServiceConfigProperty[]{ 
-            new ServiceConfigProperty("management-query-passwords",true), 
-            new ServiceConfigProperty("management-hold",true), 
-            new ServiceConfigProperty("management-signal",true), 
-            new ServiceConfigProperty("management-forget-disconnect",true), 
-            new ServiceConfigProperty("management",true), 
-            new ServiceConfigProperty("auth-retry interact",false)};
-
         /// <summary>
         /// tries to find openvpn binary in %PATH% and in %PROGRAMS%\openvpn\bin
         /// </summary>
@@ -141,28 +133,7 @@ namespace OpenVPNUtils
             }
         }
 
-        /// <summary>
-        /// try to locate the configuration directory of openvpn
-        /// </summary>
-        /// <param name="vpnbin">path where openvpn lies</param>
-        /// <returns>path to configuration directory or null</returns>
-        static public string LocateOpenVPNConfigDir(string vpnbin)
-        {
-            string p = Path.GetFullPath(Path.Combine(vpnbin,
-                string.Join(Path.DirectorySeparatorChar.ToString(),
-                new string[] { "..", "..", "config"})));
-
-            try
-            {
-                if ((new DirectoryInfo(p)).Exists)
-                    return p;
-            }
-            catch (DirectoryNotFoundException)
-            {
-            }
-
-            return null;
-        }
+        
 
         /// <summary>
         /// find all configuration files in a specific directory
@@ -193,12 +164,7 @@ namespace OpenVPNUtils
         {
             // if only a single management configuration item is pressent still asume it is meant for use with the service.
             ConfigParser cf = new ConfigParser(config);
-            foreach (var directive in managementConfigItems)
-            {
-                if (directive.serviceOnly)
-                    if (cf.GetValue(directive.name) != null)
-                        return true;
-            }
+
             //cf.Dispose();
             return false;
         }

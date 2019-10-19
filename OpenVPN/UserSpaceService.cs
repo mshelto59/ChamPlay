@@ -22,11 +22,6 @@ namespace OpenVPNUtils
         private Process m_process;
 
         /// <summary>
-        /// log manager which is used to write log lines to
-        /// </summary>
-        private LogManager m_logs;
-
-        /// <summary>
         /// saves, whether the OpenVPN Process is running
         /// </summary>
         private bool running;
@@ -51,10 +46,10 @@ namespace OpenVPNUtils
         /// <param name="logfile">file to write OpenVPN log to</param>
         /// <param name="smartCardSupport">enable SmartCard support</param>
         public UserSpaceService(string binfile, string configfile, 
-            string dir, LogManager logs, string host, int port,
+            string dir, string host, int port,
             string logfile, bool smartCardSupport)
         {
-            m_logs = logs;
+            
 
             m_psi.FileName = binfile;
             m_psi.WorkingDirectory = dir;
@@ -86,8 +81,7 @@ namespace OpenVPNUtils
         /// </summary>
         public void Start() 
         {
-            m_logs.logDebugLine(1, "Starting OpenVPN");
-            m_logs.logLine(LogType.Management, "Starting OpenVPN...");
+           
 
             m_process = new Process();
             m_process.StartInfo = m_psi;
@@ -98,13 +92,11 @@ namespace OpenVPNUtils
             {
                 m_process.Start();
             } catch(System.ComponentModel.Win32Exception) {
-                m_logs.logLine(LogType.Management, "Could not start OpenVPN");
+               
                 return;
             }
 
-            m_logs.logDebugLine(1, "Started");
-            m_logs.logLine(LogType.Management, "OpenVPN is running");
-
+            
             running = true;
         }
 
@@ -114,7 +106,7 @@ namespace OpenVPNUtils
         public void kill()
         {
             if (!running) return;
-            m_logs.logDebugLine(2, "Forcing OpenVPN to terminate");
+           
 
             try
             {
@@ -122,7 +114,7 @@ namespace OpenVPNUtils
             }
             catch (InvalidOperationException e)
             {
-                m_logs.logDebugLine(1, "Could not stop openvpn: " + e.Message);
+              
             }
         }
 
@@ -142,8 +134,6 @@ namespace OpenVPNUtils
         private void exited_event(object sender, EventArgs args)
         {
             running = false;
-            m_logs.logDebugLine(2, "OpenVPN stopped");
-            m_logs.logLine(LogType.Management, "OpenVPN stopped");
             serviceExited(this, new EventArgs());
         }
 

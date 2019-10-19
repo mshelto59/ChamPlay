@@ -29,34 +29,6 @@ namespace OpenVPNUtils
             if (!new FileInfo(config).Exists)
                 throw new FileNotFoundException(config, "Config file \"" + config + "\" does not exist");
 
-            ConfigParser cf = new ConfigParser(config);
-
-            //management 127.0.0.1 11194
-            foreach (var directive in UtilsHelper.managementConfigItems)
-            {
-                if(!cf.DirectiveExists(directive.name))
-                  throw new ArgumentException("The directive '" + directive.name + "' is needed in '" + config + "'");
-            }
-
-            if (smartCardSupport)
-            {
-                if (!cf.DirectiveExists("pkcs11-id-management"))
-                    throw new ArgumentException(
-                        "The directive 'pkcs11-id-management' is needed in '" + config + "'");
-            }
-
-            int port;
-            string[] args = cf.GetValue("management");
-            if(args.GetUpperBound(0) != 2)
-                throw new ArgumentException("The directive 'management'"
-                            + " is invalid in '" + config + "'");
-
-            if(!int.TryParse(args[2], out port))
-                throw new ArgumentException("The port '" + args[2]
-                        + "' is invalid in '" + config + "'");
-
-            m_logFile = getLogFile(config);
-            this.Init(args[1], port, earlyLogEvent, earlyLogLevel, false);
         }
         #endregion
 

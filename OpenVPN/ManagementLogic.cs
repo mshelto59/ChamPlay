@@ -77,11 +77,6 @@ namespace OpenVPNUtils
         private Communicator m_ovpnComm;
 
         /// <summary>
-        /// Log Manager used to log events.
-        /// </summary>
-        private LogManager m_logs;
-
-        /// <summary>
         /// What are we waiting for at the moment?
         /// </summary>
         private WaitState m_state = WaitState.NULL;
@@ -127,15 +122,15 @@ namespace OpenVPNUtils
         /// <param name="logs">LogManager to write the logs to</param>
         /// <param name="receiveOldLogs">Should old log lines be received?</param>
         public ManagementLogic(Connection ovpn, string host,
-            int port, LogManager logs, bool receiveOldLogs)
+            int port, bool receiveOldLogs)
         {
             m_ovpn = ovpn;
-            m_logs = logs;
+
             m_releaselock = true;
             m_receiveOldLogs = receiveOldLogs;
 
             // initialize required components
-            m_ovpnComm = new Communicator(host, port, logs);
+            m_ovpnComm = new Communicator(host, port);
             m_ovpnMParser = new ManagementParser(m_ovpnComm, this);
             m_pkcs11details = new List<PKCS11Detail>();
 
@@ -173,7 +168,7 @@ namespace OpenVPNUtils
             {
                 setLock(WaitState.SIGNAL);
                 m_releaselock = false;
-                m_logs.logLine(LogType.Management, "Sending signal to quit");
+         
                 m_ovpnComm.send("signal SIGTERM");
                 while (m_state == WaitState.SIGNAL && m_ovpnComm.isConnected())
                 {
@@ -193,7 +188,7 @@ namespace OpenVPNUtils
             {
                 setLock(WaitState.SIGNAL);
                 m_releaselock = false;
-                m_logs.logLine(LogType.Management, "Sending signal to restart");
+               
                 m_ovpnComm.send("signal SIGHUP");
                 while (m_state == WaitState.SIGNAL)
                 {
@@ -215,7 +210,7 @@ namespace OpenVPNUtils
         /// </summary>
         public void sendDisconnect()
         {
-            m_logs.logLine(LogType.Management, "Sending signal to close connection");
+           
             m_ovpnComm.send("exit");
             while (isConnected())
             {
@@ -243,7 +238,7 @@ namespace OpenVPNUtils
         /// </summary>
         public void reset()
         {
-            m_logs.logDebugLine(5, "resetting logic");
+            
 
             m_pkcs11count = 0;
 
@@ -447,9 +442,7 @@ namespace OpenVPNUtils
             // error in parsing
             else
             {
-                m_logs.logDebugLine(1,
-                    "Error while parsing pkcs11-id-get: \"" +
-                    msg + "\"");
+                
 
                 releaseLock();
             }
@@ -461,16 +454,13 @@ namespace OpenVPNUtils
 
             if (m_pkcs11count == -1)
             {
-                m_logs.logLine(LogType.Management,
-                    "Could not determine the number of pkcs11-ids:\"" +
-                    msg + "\"");
+               
                 releaseLock();
             }
 
             else if (m_pkcs11count == 0)
             {
-                m_logs.logLine(LogType.Management,
-                    "No pkcs11-ids were found");
+               
 
                 int id = m_ovpn.getKeyID(new List<PKCS11Detail>());
                 if (id == NeedCardIdEventArgs.Retry)
@@ -482,8 +472,7 @@ namespace OpenVPNUtils
             }
             else
             {
-                m_logs.logLine(LogType.Management,
-                    "Got " + m_pkcs11count + " PKCS11-IDs");
+                
                 m_pkcs11details.Clear();
                 releaseLock();
 
@@ -498,8 +487,7 @@ namespace OpenVPNUtils
         /// <param name="aeDetail">details about the event</param>
         public void got_asyncEvent(AsyncEventDetail aeDetail)
         {
-            m_logs.logDebugLine(4, "Extracted async event: " +
-                aeDetail.eventType.ToString() + ": " + aeDetail.message);
+           
 
             // if we can't execute just queue it
             try
@@ -562,8 +550,8 @@ namespace OpenVPNUtils
             // otherwise, we automatically reconnect
             m_ovpn.State.ChangeVPNState(details);
 
-            m_logs.logLine(LogType.State,
-                aeDetail.getInfos()[1]);
+           
+                
         }
 
         private void ProcessAsyncEventHold(AsyncEventDetail aeDetail)
@@ -598,7 +586,7 @@ namespace OpenVPNUtils
             {
                 // A SmartCard ID is requested
                 case "pkcs11-id-request":
-                    m_logs.logDebugLine(3, "Got Request for pkcs11-id");
+                   
 
                     setLock(WaitState.PKCS11_GET_COUNT);
                     m_ovpnComm.send("pkcs11-id-count");
@@ -662,11 +650,11 @@ namespace OpenVPNUtils
             else if (pwMsg.Equals("Verification Failed",
                 System.StringComparison.OrdinalIgnoreCase))
             {
-                m_logs.logDebugLine(1, "Authentication Failed said remote server");
+             
             }
             else
             {
-                m_logs.logDebugLine(1, "Unknown 'PASSWORD' reply from remote server: " + pwMsg);
+                
             }
         }
 
@@ -677,8 +665,7 @@ namespace OpenVPNUtils
             if (!long.TryParse(parts[0], out time))
                 time = 0;
 
-            m_logs.logLine(LogType.Log,
-                parts[2], time);
+           
         }
 
         #region IDisposable Members
@@ -704,7 +691,7 @@ namespace OpenVPNUtils
                 {
                     m_ovpnComm.Dispose();
                 }
-                m_logs = null;
+               
                 m_ovpnMParser = null;
                 m_pkcs11details = null;
                 m_todo = null;
