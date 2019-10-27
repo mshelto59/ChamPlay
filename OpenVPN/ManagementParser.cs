@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Text;
 
@@ -163,52 +163,11 @@ namespace OpenVPNUtils
         /// </summary>
         /// <param name="s">string which the server sent</param>
         /// <returns>a PKCS11Detail structure which holds the extracted information</returns>
-        public static PKCS11Detail getPKCS11ID(string s) {
-
-            // get the essential parts
-            string[] parts = s.Split(new Char[] { ',' });
-
-            int nr;
-            string id;
-            string blob;
-
-            // try to get the number, id and blob
-            try
-            {
-                if (parts[0].StartsWith(">PKCS11ID-ENTRY:'", 
-                    StringComparison.OrdinalIgnoreCase))
-                    nr = int.Parse(parts[0].Substring(17, parts[0].Length - 18),
-                        CultureInfo.InvariantCulture.NumberFormat);
-                else
-                    return null;
-
-                if (parts[1].StartsWith(" ID:'", 
-                    StringComparison.OrdinalIgnoreCase))
-                    id = parts[1].Substring(5, parts[1].Length - 6);
-                else
-                    return null;
-
-                if (parts[2].StartsWith(" BLOB:'", 
-                    StringComparison.OrdinalIgnoreCase))
-                    blob = parts[2].Substring(7, parts[2].Length - 10);
-                else
-                    return null;
-
-                // return the extracted data
-                return new PKCS11Detail(nr, id, blob);
-            }
-            catch (FormatException)
-            {
-                // the format had a problem;
-                return null;
-            }
-        }
-
+        
         /// <summary>
         /// encode an parameter for an answer
         /// (this is needed if it countains spaces)
         /// </summary>
-        /// <param name="s">the parameter</param>
         /// <returns>the encoded parameter</returns>
         public static string encodeMsg(string s)
         {

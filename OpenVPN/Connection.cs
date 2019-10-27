@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -30,10 +30,6 @@ namespace OpenVPNUtils
         #endregion
 
         #region events
-        /// <summary>
-        /// Asks for a SmartCard ID to use.
-        /// </summary>
-        public event EventHandler<NeedCardIdEventArgs> NeedCardId;
 
         /// <summary>
         /// Asks for a Password.
@@ -58,10 +54,8 @@ namespace OpenVPNUtils
         /// </summary>
         /// <param name="host">Host to connect to which holds the management interface</param>
         /// <param name="port">Port to connect to</param>
-        /// <param name="earlyLogEvent">Delegate to a event processor</param>
         /// <param name="earlyLogLevel">Log level</param>
         /// <param name="receiveOldLogs">Should old log lines be received?</param>
-        /// <seealso cref="Logs"/>
         protected void Init(string host, int port, int earlyLogLevel, bool receiveOldLogs)
         {
             this.Host = host;
@@ -246,26 +240,7 @@ namespace OpenVPNUtils
 
         #region internal methods
 
-        /// <summary>
-        /// we need a key id, raise an event to fetch it
-        /// </summary>
-        /// <param name="pkcs11d">available keys</param>
-        /// <returns>id of the key to use</returns>
-        internal int getKeyID(List<PKCS11Detail> pkcs11d)
-        {
-            if (NoEvents) 
-                return NeedCardIdEventArgs.None;
-
-           
-            NeedCardIdEventArgs args = 
-                new NeedCardIdEventArgs(pkcs11d.ToArray());
-
-            if(NeedCardId != null)
-                NeedCardId(this, args);
-            return args.SelectedId;
-        }
-
-        /// <summary>
+                /// <summary>
         /// We need a password, raise an event to fetch it.
         /// </summary>
         /// <param name="pwType">

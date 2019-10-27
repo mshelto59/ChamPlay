@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using OpenVPNUtils.States;
@@ -92,16 +92,6 @@ namespace OpenVPNUtils
         private Connection m_ovpn;
 
         /// <summary>
-        /// Number of known SmartCards.
-        /// </summary>
-        private int m_pkcs11count;
-
-        /// <summary>
-        /// Details of the SmartCards.
-        /// </summary>
-        private List<PKCS11Detail> m_pkcs11details;
-
-        /// <summary>
         /// If openvpn is locked - should we release it?
         /// </summary>
         private bool m_releaselock;
@@ -132,7 +122,6 @@ namespace OpenVPNUtils
             // initialize required components
             m_ovpnComm = new Communicator(host, port);
             m_ovpnMParser = new ManagementParser(m_ovpnComm, this);
-            m_pkcs11details = new List<PKCS11Detail>();
 
             m_ovpnComm.connectionClosed += new System.EventHandler(m_ovpnComm_connectionClosed);
         }
@@ -240,11 +229,6 @@ namespace OpenVPNUtils
         {
             
 
-            m_pkcs11count = 0;
-
-            if (m_pkcs11details != null)
-                m_pkcs11details.Clear();
-
             if (m_todo != null)
                 m_todo.Clear();
 
@@ -348,16 +332,6 @@ namespace OpenVPNUtils
             // the reaction depends on what we are waiting for
             switch (m_state)
             {
-
-                // the number of SmartCards
-                case WaitState.PKCS11_GET_COUNT:
-                    ProcessSyncEventPkcs11GetCount(msg);
-                    break;
-
-                case WaitState.PKCS11_GET_KEYS:
-                    ProcessSyncEventPkcs11GetKeys(msg);
-                    break;
-
                 // logging was turned on, wait for log lines
                 case WaitState.LOG_ON_ALL_1:
                     setLock(WaitState.LOG_ON_ALL_2, true);
@@ -411,76 +385,7 @@ namespace OpenVPNUtils
             m_ovpnComm.send("state on");
         }
 
-        private void ProcessSyncEventPkcs11GetKeys(string msg)
-        {
-            PKCS11Detail d = ManagementParser.getPKCS11ID(msg);
-
-            if (d != null)
-            {
-                m_pkcs11details.Add(d);
-
-                if (d.Number < m_pkcs11count - 1)
-                    m_ovpnComm.send("pkcs11-id-get " + (d.Number + 1));
-
-                else
-                {
-                    releaseLock();
-
-                    int kid = m_ovpn.getKeyID(m_pkcs11details);
-
-                    if (kid == NeedCardIdEventArgs.Retry)
-                    {
-                        setLock(WaitState.PKCS11_GET_COUNT);
-                        m_ovpnComm.send("pkcs11-id-count");
-                    }
-                    else if (kid != NeedCardIdEventArgs.None)
-                        m_ovpnComm.send("needstr 'pkcs11-id-request' '" +
-                            m_pkcs11details[kid].Id + "'");
-                }
-            }
-
-            // error in parsing
-            else
-            {
-                
-
-                releaseLock();
-            }
-        }
-
-        private void ProcessSyncEventPkcs11GetCount(string msg)
-        {
-            m_pkcs11count = ManagementParser.getPKCS11IDCount(msg);
-
-            if (m_pkcs11count == -1)
-            {
-               
-                releaseLock();
-            }
-
-            else if (m_pkcs11count == 0)
-            {
-               
-
-                int id = m_ovpn.getKeyID(new List<PKCS11Detail>());
-                if (id == NeedCardIdEventArgs.Retry)
-                    m_ovpnComm.send("pkcs11-id-count");
-                else
-                {
-                    releaseLock();
-                }
-            }
-            else
-            {
-                
-                m_pkcs11details.Clear();
-                releaseLock();
-
-                setLock(WaitState.PKCS11_GET_KEYS);
-                m_ovpnComm.send("pkcs11-id-get 0");
-            }
-        }
-
+       
         /// <summary>
         /// We got an asynchronous event (e.g. a log message).
         /// </summary>
@@ -693,7 +598,6 @@ namespace OpenVPNUtils
                 }
                
                 m_ovpnMParser = null;
-                m_pkcs11details = null;
                 m_todo = null;
                 m_ovpn = null;
                 disposed = true;

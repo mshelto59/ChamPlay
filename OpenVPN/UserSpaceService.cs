@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Principal;
@@ -40,14 +40,12 @@ namespace OpenVPNUtils
         /// <param name="binfile">path to openvpn</param>
         /// <param name="configfile">path to openvpn config</param>
         /// <param name="dir">directory where config lies</param>
-        /// <param name="logs">provider to write logs to</param>
         /// <param name="host">The host to connect to (e.g. 127.0.0.1)</param>
         /// <param name="port">The port to connect to</param>
         /// <param name="logfile">file to write OpenVPN log to</param>
-        /// <param name="smartCardSupport">enable SmartCard support</param>
         public UserSpaceService(string binfile, string configfile, 
             string dir, string host, int port,
-            string logfile, bool smartCardSupport)
+            string logfile)
         {
             
 
@@ -72,8 +70,6 @@ namespace OpenVPNUtils
                 " --management-forget-disconnect" +
                 " --auth-retry interact";
 
-            if (smartCardSupport)
-                m_psi.Arguments += " --pkcs11-id-management";
         }
 
         /// <summary>

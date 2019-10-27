@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using OpenVPNUtils.States;
 using System.Threading;
@@ -19,10 +19,9 @@ namespace OpenVPNUtils
         /// <param name="config">Path to configuration file</param>
         /// <param name="earlyLogEvent">Delegate to a event processor</param>
         /// <param name="earlyLogLevel">Log level</param>
-        /// <param name="smartCardSupport">Enable SmartCard support</param>
-        /// <seealso cref="Connection.Logs"/>
+        
         public ServiceConnection(string config,
-            EventHandler<LogEventArgs> earlyLogEvent, int earlyLogLevel, bool smartCardSupport)
+            EventHandler<LogEventArgs> earlyLogEvent, int earlyLogLevel)
         {
             if (config == null)
                 throw new ArgumentNullException(config, "Config file is null");

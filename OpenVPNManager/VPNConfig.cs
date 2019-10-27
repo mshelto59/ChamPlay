@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -192,7 +192,7 @@ namespace OpenVPNManager
             try
             {
                 
-                    VPNConnection = new UserSpaceConnection(m_bin, m_file, m_dbglevel, m_smartCard);
+                    VPNConnection = new UserSpaceConnection(m_bin, m_file, m_dbglevel);
                
             }
             catch (ApplicationException e)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
@@ -51,7 +51,7 @@ namespace OpenVPNManager
                 Properties.Settings.Default.lastUpdateCheck = DateTime.Now;
                 Properties.Settings.Default.Save();
             }
-
+            /*UPDATE SERVER NOT IMPLEMENTED
             if (checkupdate)
             {
                 Update u = new Update(true, this);
@@ -63,6 +63,7 @@ namespace OpenVPNManager
                         ToolTipIcon.Info);
                 }
             }
+            */
         }
 
         private void LoadPositionSettings()

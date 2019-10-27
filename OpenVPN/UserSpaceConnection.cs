@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading;
 using OpenVPNUtils.States;
@@ -40,12 +40,9 @@ namespace OpenVPNUtils
         /// </summary>
         /// <param name="bin">Path to openvpn binary</param>
         /// <param name="config">Path to configuration file</param>
-        /// <param name="earlyLogEvent">Delegate to a event processor</param>
         /// <param name="earlyLogLevel">Log level</param>
-        /// <param name="smartCardSupport">Enable SmartCard support</param>
-        /// <seealso cref="Connection.Logs"/>
-        public UserSpaceConnection(string bin, string config,
-           int earlyLogLevel, bool smartCardSupport)
+       public UserSpaceConnection(string bin, string config,
+           int earlyLogLevel)
         {
             if (bin == null || bin.Length == 0)
                 throw new ArgumentNullException(bin, "OpenVPN Binary is not valid/selected");
@@ -76,7 +73,7 @@ namespace OpenVPNUtils
             this.Init("127.0.0.1", 11195 + obj_count++, earlyLogLevel, true);
             m_ovpnService = new UserSpaceService(bin, config,
                 Path.GetDirectoryName(config), base.Host, base.Port,
-                forwardLogFile, smartCardSupport);
+                forwardLogFile);
 
             m_ovpnService.serviceExited += new EventHandler(m_ovpnService_serviceExited);
         }
