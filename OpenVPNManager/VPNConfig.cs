@@ -58,9 +58,7 @@ namespace OpenVPNManager
         /// </summary>
         private bool m_isService;
 
-        private FrmPasswd m_frmpw;
-
-        private FrmLoginAndPasswd m_frmlpw;
+       private FrmLoginAndPasswd m_frmlpw;
 
         #endregion
 
@@ -214,7 +212,6 @@ namespace OpenVPNManager
 
             
             VPNConnection.State.StateChanged += new EventHandler<StateChangedEventArgs>(State_StateChanged);
-            VPNConnection.NeedPassword += new EventHandler<NeedPasswordEventArgs>(m_vpn_needPassword);
             VPNConnection.NeedLoginAndPassword += new EventHandler<NeedLoginAndPasswordEventArgs>(m_vpn_needLoginAndPassword);
 
             
@@ -274,17 +271,6 @@ namespace OpenVPNManager
 
 
         /// <summary>
-        /// Show error detail in a message box
-        /// </summary>
-        public void ShowErrors()
-        {
-            RTLMessageBox.Show(m_parent,
-                Program.res.GetString("BOX_Error_Information") +
-                Environment.NewLine + m_error_message,
-                MessageBoxIcon.Error);
-        }
-
-        /// <summary>
         /// connect to the VPN <br />
         /// show message box on error
         /// </summary>
@@ -336,9 +322,6 @@ namespace OpenVPNManager
                 {
                 }
 
-            if (m_frmpw != null)
-                m_frmpw.Invoke(new UtilsHelper.Action<Form>(closeSubForm), m_frmpw);
-
             if (m_frmlpw != null)
                 m_frmlpw.Invoke(new UtilsHelper.Action<Form>(closeSubForm), m_frmlpw);
 
@@ -347,27 +330,7 @@ namespace OpenVPNManager
         private void closeSubForm(Form f) { f.Close(); }
 
 
-        /// <summary>
-        /// edit a configuration <br />
-        /// this method simply starts notepad and opens the configuration file
-        /// </summary>
-        public void Edit()
-        {
-            ProcessStartInfo pi = new ProcessStartInfo();
-            pi.Arguments = "\"" + m_file + "\"";
-            pi.ErrorDialog = true;
-            pi.FileName = "notepad.exe";
-            pi.UseShellExecute = true;
-
-            Process p = new Process();
-            p.StartInfo = pi;
-            p.EnableRaisingEvents = true;
-            p.Exited += new EventHandler(p_Exited);
-
-            p.Start();
-
-        }
-
+       
         /// <summary>
         /// close the connection after timespan has elapsed
         /// </summary>
@@ -408,26 +371,6 @@ namespace OpenVPNManager
                     Connect();
         }
 
-        /// <summary>
-        /// OVPN requests a password <br />
-        /// generates and shows a form, answers via e
-        /// </summary>
-        /// <param name="sender">OVPN which requests the password</param>
-        /// <param name="e">Information, what is needed</param>
-        private void m_vpn_needPassword(object sender, NeedPasswordEventArgs e)
-        {
-            m_frmpw = new FrmPasswd();
-            e.Password = m_frmpw.AskPass(e.PasswordType, Name);
-
-            // if no password was entered, disconnect
-            if (e.Password == null &&
-                VPNConnection.State.CreateSnapshot().ConnectionState
-                == VPNConnectionState.Initializing)
-            {
-                m_disconnectTimer.Start();
-            }
-            m_frmpw = null;
-        }
 
         /// <summary>
         /// OVPN requests a username and password <br />
@@ -457,55 +400,6 @@ namespace OpenVPNManager
             m_frmlpw = null;
         }
 
-        
-
-        /// <summary>
-        /// "Error Information" was selected.
-        /// </summary>
-        /// <param name="sender">ignored</param>
-        /// <param name="e">ignored</param>
-        void m_menu_error_Click(object sender, EventArgs e)
-        {
-            ShowErrors();
-        }
-
-        /// <summary>
-        /// edit was selected in the context menu
-        /// </summary>
-        /// <param name="sender">not used</param>
-        /// <param name="e">not used</param>
-        void m_menu_edit_Click(object sender, EventArgs e)
-        {
-            Edit();
-        }
-
-        /// <summary>
-        /// disconnect was selected in the context menu
-        /// </summary>
-        /// <param name="sender">ignored</param>
-        /// <param name="e">ignored</param>
-        private void m_menu_disconnect_Click(object sender, EventArgs e)
-        {
-            VPNConnectionState state = VPNConnection.State.CreateSnapshot().ConnectionState;
-            if (state == VPNConnectionState.Initializing ||
-                state == VPNConnectionState.Running)
-
-                Disconnect();
-        }
-
-        /// <summary>
-        /// connect was selected in the context menu
-        /// </summary>
-        /// <param name="sender">ignored</param>
-        /// <param name="e">ignored</param>
-        private void m_menu_connect_Click(object sender, EventArgs e)
-        {
-            // connect only, if we are disconnected
-            StateSnapshot ss = VPNConnection.State.CreateSnapshot();
-            if (ss.ConnectionState == VPNConnectionState.Stopped ||
-                ss.ConnectionState == VPNConnectionState.Error)
-                Connect();
-        }
 
         /// <summary>
         /// Determines, whether this configuration is connected.
@@ -549,15 +443,12 @@ namespace OpenVPNManager
                 {
                     m_disconnectTimer.Dispose();
                     m_frmlpw.Dispose();
-                    m_frmpw.Dispose();
                     m_parent.Dispose();
                     VPNConnection.Dispose();
                 }
 
                 VPNConnection = null;
                 m_parent = null;
-                
-                m_frmpw = null;
                 m_frmlpw = null;
                 m_disconnectTimer = null;
 

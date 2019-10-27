@@ -17,11 +17,10 @@ namespace OpenVPNUtils
         /// Also set a LogEventDelegate so that the first log lines are reveived.
         /// </summary>
         /// <param name="config">Path to configuration file</param>
-        /// <param name="earlyLogEvent">Delegate to a event processor</param>
         /// <param name="earlyLogLevel">Log level</param>
         
         public ServiceConnection(string config,
-            EventHandler<LogEventArgs> earlyLogEvent, int earlyLogLevel)
+            int earlyLogLevel)
         {
             if (config == null)
                 throw new ArgumentNullException(config, "Config file is null");

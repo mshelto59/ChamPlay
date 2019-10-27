@@ -109,7 +109,6 @@ namespace OpenVPNUtils
         /// <param name="ovpn">parent</param>
         /// <param name="host">host to connect to (e.g. 127.0.0.1)</param>
         /// <param name="port">port to connect to</param>
-        /// <param name="logs">LogManager to write the logs to</param>
         /// <param name="receiveOldLogs">Should old log lines be received?</param>
         public ManagementLogic(Connection ovpn, string host,
             int port, bool receiveOldLogs)

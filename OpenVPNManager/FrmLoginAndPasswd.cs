@@ -33,19 +33,16 @@ namespace OpenVPNManager
         {
             // set labels
             lblAsk.Text = pwTitle;
-            lblName.Text = config;
+          
 
             ProfileSettings settings = Settings.current.getProfile(config);
-            chkRememberName.Checked = settings.storeUserName;
-            txtUsername.Text = settings.userName;
+           txtUsername.Text = settings.userName;
             // show form, return
             if (this.ShowDialog() != DialogResult.OK)
                 return null;
             else
             {
-                settings.storeUserName = chkRememberName.Checked;
-                if (settings.storeUserName)
-                    settings.userName = txtUsername.Text;
+               
                 Settings.current.Save();
                 return new string[]{txtUsername.Text,txtPasswd.Text};
             }
@@ -56,11 +53,6 @@ namespace OpenVPNManager
             ((TextBox)sender).SelectAll();
         }
 
-        private void FrmLoginAndPasswd_Shown(object sender, System.EventArgs e)
-        {
-
-            if (chkRememberName.Checked)
-                txtPasswd.Focus();
-        }
+       
     }
 }

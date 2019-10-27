@@ -129,10 +129,6 @@
     <Compile Include="FrmLoginAndPasswd.Designer.cs">
       <DependentUpon>FrmLoginAndPasswd.cs</DependentUpon>
     </Compile>
-    <Compile Include="Helper.cs" />
-    <Compile Include="IPLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="lang\strings.de.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -150,15 +146,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="RTLMessageBox.cs" />
-    <Compile Include="SimpleComm.cs" />
     <Compile Include="Update.cs" />
     <Compile Include="VPNConfig.cs" />
-    <Compile Include="FrmPasswd.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmPasswd.Designer.cs">
-      <DependentUpon>FrmPasswd.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrmAbout.de.resx">
@@ -183,14 +172,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmLoginAndPasswd.resx">
       <DependentUpon>FrmLoginAndPasswd.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmPasswd.de.resx">
-      <DependentUpon>FrmPasswd.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmPasswd.resx">
-      <DependentUpon>FrmPasswd.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="lang\strings.de.resx">

@@ -38,8 +38,6 @@
             this.txtUsername = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.lblAsk = new System.Windows.Forms.Label();
-            this.lblName = new System.Windows.Forms.Label();
-            this.chkRememberName = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label2
@@ -59,17 +57,17 @@
             // 
             // btnCancel
             // 
-            resources.ApplyResources(this.btnCancel, "btnCancel");
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Image = global::OpenVPNManager.Properties.Resources.BUTTON_Cancel;
+            resources.ApplyResources(this.btnCancel, "btnCancel");
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
             // btnAccept
             // 
-            resources.ApplyResources(this.btnAccept, "btnAccept");
             this.btnAccept.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnAccept.Image = global::OpenVPNManager.Properties.Resources.BUTTON_Close;
+            resources.ApplyResources(this.btnAccept, "btnAccept");
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.UseVisualStyleBackColor = true;
             // 
@@ -95,25 +93,12 @@
             resources.ApplyResources(this.lblAsk, "lblAsk");
             this.lblAsk.Name = "lblAsk";
             // 
-            // lblName
-            // 
-            resources.ApplyResources(this.lblName, "lblName");
-            this.lblName.Name = "lblName";
-            // 
-            // chkRememberName
-            // 
-            resources.ApplyResources(this.chkRememberName, "chkRememberName");
-            this.chkRememberName.Name = "chkRememberName";
-            this.chkRememberName.UseVisualStyleBackColor = true;
-            // 
             // FrmLoginAndPasswd
             // 
             this.AcceptButton = this.btnAccept;
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.Controls.Add(this.chkRememberName);
-            this.Controls.Add(this.lblName);
             this.Controls.Add(this.lblAsk);
             this.Controls.Add(this.txtUsername);
             this.Controls.Add(this.label3);
@@ -127,7 +112,6 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FrmLoginAndPasswd";
-            this.Shown += new System.EventHandler(this.FrmLoginAndPasswd_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -144,7 +128,5 @@
         private System.Windows.Forms.TextBox txtUsername;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblAsk;
-        private System.Windows.Forms.Label lblName;
-        private System.Windows.Forms.CheckBox chkRememberName;
     }
 }

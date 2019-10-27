@@ -34,7 +34,7 @@ namespace OpenVPNManager
         public FrmGlobalStatus()
         {
             InitializeComponent();
-            Helper.UpdateSettings();
+            
             LoadPositionSettings();
 
             ReadConfigs();

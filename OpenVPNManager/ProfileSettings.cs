@@ -18,25 +18,8 @@ namespace OpenVPNManager
             this.profileName = profileName;
         }
         public String profileName;
-        private bool _storeUserName;
         private String _userName;
-        public bool storeUserName
-        {
-            get
-            {
-                return _storeUserName;
-            }
-            set
-            {
-                if (storeUserName != value)
-                {
-                    _storeUserName = value;
-                    Settings.current.changed = true;
-                }
-                if (_storeUserName == false)
-                    userName = "";
-            }
-        }
+       
         public String userName{
             get{
                 return _userName == null ? "" : _userName;

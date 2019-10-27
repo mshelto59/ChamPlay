@@ -28,20 +28,6 @@ namespace OpenVPNManager
 
         private static FrmGlobalStatus m_mainform;
 
-        static bool CommandLineArgumentsContain(List<string> arguments, String parameter)
-        {
-            foreach (String arg in arguments)
-            {
-                if ("/\\-".Contains(arg.Substring(0, 1)))
-                {
-                    String param = arg.Substring(1);
-                    if (parameter.Equals(param, StringComparison.InvariantCultureIgnoreCase))
-                        return true;
-                }
-            }
-            return false;
-        }
-
         /// <summary>
         /// Main entry point
         /// </summary>
